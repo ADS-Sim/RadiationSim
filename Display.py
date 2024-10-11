@@ -13,32 +13,35 @@ class Display:
 
         self.origin = [0, 0]
 
+        self.failure_x_axis = []
+        self.failure_y_axis = []
+
     def plot_pcb(self, pcb):
         self.particle_ax.add_patch(patches.Rectangle((self.origin[0], self.origin[1]),
                                                      pcb.size[0], pcb.size[1],
                                                      edgecolor=pcb.edge_color, facecolor=pcb.face_color))
+        # Shots
+        for component in pcb.component_list:
+            self.particle_ax.add_patch(patches.Rectangle((component.pos_x - component.size[0] / 2,
+                                                          component.pos_y - component.size[1] / 2),
+                                                         component.size[0], component.size[1],
+                                                         edgecolor=component.edge_color, facecolor=component.color))
 
-    def plot_particles(self, component_list, particle_list_x, particle_list_y, particle_list_x_hit, particle_list_y_hit):
+    def plot_particles(self, particle_list_x, particle_list_y, particle_list_x_hit, particle_list_y_hit):
         plt.gca().set_aspect('equal', adjustable='box')  # Ensures equal aspect ratio
         self.particle_ax.set_title("RADIATION SPREAD")
 
-        # Shots
-        for component in component_list:
-            self.particle_ax.add_patch(component.square)
         self.particle_ax.scatter(particle_list_x, particle_list_y, c='b', s=0.1)
         self.particle_ax.scatter(particle_list_x_hit, particle_list_y_hit, c='r', s=0.1)
-        # for particle in particle_list:
-        #     self.particle_ax.scatter(particle.pos_x, particle.pos_y, c=particle.color, s=0.1)
 
     def plot_failure(self, simulation):
         plt.gca().set_aspect('auto', adjustable='box')  # Ensures auto aspect ratio
         self.failure_ax.set_title("FAILURE OVER TIME")
         self.failure_ax.set_ylim([0, 1])
-        x_list = [number for number in range(simulation.mission_time)]
+
         for component in simulation.pcb.component_list:
-            y_list = component.sort_failure_rate_list(simulation.particle_rate)
-            self.failure_ax.plot(x_list, y_list, color=component.color)
-        self.failure_ax.plot([0, len(x_list) - 1], [0.4, 0.4], color='r', linestyle='-')
+            self.failure_ax.plot(component.time_list_failure, component.rate_list_failure, color=component.color)  # LA
+            self.failure_ax.plot([0, len(component.time_list_failure) - 1], [0.4, 0.4], color='r', linestyle='-')
 
     def display_graphs(self):
         plt.show()

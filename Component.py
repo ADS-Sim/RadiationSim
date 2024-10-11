@@ -29,26 +29,37 @@ class Component:
     def __init__(self, pos_x, pos_y, size, color):
         self.pos_x = pos_x
         self.pos_y = pos_y
+        self.size = size
         self.color = color
-        self.square = patches.Rectangle((self.pos_x - size[0] / 2, self.pos_y - size[1] / 2),
-                                        size[0], size[1], edgecolor='k', facecolor=color)
+        self.edge_color = 'k'
+
         self.borders_x = [self.pos_x - size[0] / 2, self.pos_x + size[0] / 2]
         self.borders_y = [self.pos_y - size[1] / 2, self.pos_y + size[1] / 2]
 
         self.failure_rate = 0
         self.failure_rate_margin = 0
         self.failure_rate_list = []
+        self.is_not_dead = True
 
-    def failure_recalculation(self):
-        self.failure_rate_margin += round(random.randint(0, 2) / 100, 2)
-        return self.failure_rate_margin
+        self.time_list_failure = [1]
+        self.rate_list_failure = [0.0001]
 
-    def sort_failure_rate_list(self, particle_rate):
-        temporary_failure_rate_list = []
-        for i, failure_rate in enumerate(self.failure_rate_list):
-            if i % particle_rate == 0:
-                temporary_failure_rate_list.append(failure_rate)
-        return temporary_failure_rate_list
+    def hit_check(self, particle):
+        out = False
+        if self.borders_x[0] < particle.pos_x < self.borders_x[1] and self.borders_y[0] < particle.pos_y < \
+                self.borders_y[1]:
+            out = True
+        return out
+
+    def update_timeline(self):
+        self.time_list_failure.append(self.time_list_failure[-1] + 1)
+
+    def update_failure_rate(self):
+        temporary_failure_rate = self.rate_list_failure[-1] * (1 + 0.01)
+        self.rate_list_failure.append(temporary_failure_rate)
+
+    def fill_failure_list(self):
+        self.rate_list_failure.append(self.rate_list_failure[-1])
 
 
 class Particle:
