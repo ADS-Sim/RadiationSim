@@ -94,7 +94,7 @@ class SEE:
                 self.particle_coordinates_y_hit.append(particle.pos_y)
                 # Update Failure Rate of the component and the timeline
                 component.update_timeline()
-                component.update_failure_rate()
+                component.update_failure_rate(particle)
 
             else:
                 # Add particle coordinates to no-hit list

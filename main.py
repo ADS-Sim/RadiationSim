@@ -21,6 +21,7 @@ def main():
     display.plot_particles(simulation.particle_shot_list_x, simulation.particle_shot_list_y,
                            simulation.particle_shot_list_x_hit, simulation.particle_shot_list_y_hit)
     display.plot_failure(simulation)
+    display.plot_component_failure_rate(simulation.pcb.component_list)
     display.display_graphs()
 
 
