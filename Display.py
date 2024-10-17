@@ -3,6 +3,7 @@ import random
 import time
 
 # IMPORTS
+import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 
@@ -11,7 +12,7 @@ class Display:
     def __init__(self):
         self.particle_figure, self.particle_ax = plt.subplots()
         self.failure_figure, self.failure_ax = plt.subplots()
-        self.component_figure, self.component_ax = plt.subplots()
+        self.component_figure, self.component_ax = None, None
 
         self.origin = [0, 0]
 
@@ -46,26 +47,26 @@ class Display:
             self.failure_ax.plot([0, len(component.time_list_failure) - 1], [0.4, 0.4], color='r', linestyle='-')
 
     def plot_component_failure_rate(self, component_list):
-        plot_x_coord = [5, 15, 25, 35, 45, 55, 65, 75]
-        plot_y_coord = [5, 15, 25, 35, 45, 55, 65, 75]
+        style = ['viridis', 'plasma', 'inferno', 'magma', 'cividis']
+        self.component_figure, self.component_ax = plt.subplots(2, int((len(component_list) + 1) / 2), figsize=(8, 8))
+        line = 0
+        index = 0
+        for component in component_list:
+            grid_size_x = len(component.failure_rate_matrix) + 1
+            grid_size_y = len(component.failure_rate_matrix[0]) + 1
 
-        plt.gca().set_aspect('equal', adjustable='box')  # Ensures equal aspect ratio
-        self.component_figure, self.component_ax = plt.subplots(int(len(component_list) + 1 / 2), 2)
-        for i, component in enumerate(component_list):
-            patch_list = []
-            self.component_ax[i][0].set_title(f"{component.name}")
-            self.component_ax[i][0].set_xlim = [0, (len(component.failure_rate_matrix) + 1) * 10]
-            self.component_ax[i][0].set_ylim = [0, (len(component.failure_rate_matrix[0]) + 1) * 10]
-            for x in range(len(component.failure_rate_matrix)):
-                for y in range(len(component.failure_rate_matrix[0])):
-                    # color_failure = (component.failure_rate_matrix[x][y] * 255 / 255,
-                    #                  component.failure_rate_matrix[x][y] * 255 / 255, 0.0)
-                    color_failure = (random.randint(0, 255) / 255, random.randint(0, 255) / 255, random.randint(0, 255) / 255)
-                    print(f"{int(i / 2)} : {i % 2}")
-                    self.component_ax[int(i / 2), i % 2].add_patch(patches.Rectangle((x * 10 + 5, y * 10 + 5), 10, 10, edgecolor='k', facecolor=color_failure))
-            print(patch_list)
-        self.component_ax[0][0].plot(plot_x_coord, plot_y_coord)
+            if index >= int((len(component_list) + 1) / 2):
+                line = 1
+                index = 0
+            cax = self.component_ax[line][index].imshow(component.failure_rate_matrix, cmap=style[1], vmin=0, vmax=1)
+            self.component_figure.colorbar(cax, shrink=0.7)
 
+            self.component_ax[line][index].set_title(component.name)
+            self.component_ax[line][index].set_xticks([])
+            self.component_ax[line][index].set_yticks([])
+            self.component_ax[line][index].grid(which='both', color='white', linestyle='-', linewidth=1.5)
+
+            index += 1
 
     def display_graphs(self):
         plt.show()
