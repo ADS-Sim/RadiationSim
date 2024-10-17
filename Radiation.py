@@ -20,7 +20,7 @@ class SEE:
     def __init__(self):
         # Mission Parameters
         self.orbit_type = 'LEO'
-        self.mission_time = 6 * 30  # days
+        self.mission_time = 1 * 30  # days
         self.mission_time_margin = 5  # days
 
         self.particle_rate_margin = 0.05  # 5%

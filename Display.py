@@ -69,7 +69,10 @@ class Display:
             index += 1
 
     def display_graphs(self):
-        plt.show()
+        try:
+            plt.show()
+        except KeyboardInterrupt:
+            return
 
     def simulation_time(self, simulation):
         print(f"Simulation Time : {round(time.time() - simulation.simulation_t0, 3)} s")

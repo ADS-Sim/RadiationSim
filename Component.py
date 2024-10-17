@@ -64,8 +64,10 @@ class Component:
         self.is_not_dead = True
 
         self.time_list_failure = [1]
-        self.failure_rate_matrix = 0.001 + (0.1 - 0.001) * np.random.rand(int(size[1] * self.scale) + 1,
-                                                                          int(size[0] * self.scale) + 1)
+        self.failure_rate_matrix = 0.001 + (0.08 - 0.001) * np.random.rand(int(size[1] * self.scale) + 1,
+                                                                           int(size[0] * self.scale) + 1)
+        self.package_resistance_matrix = 0 + (1 - 0) * np.random.rand(int(size[1] * self.scale) + 1,
+                                                                      int(size[0] * self.scale) + 1)
         self.failure_rate = np.max(self.failure_rate_matrix)
         self.rate_list_failure = [self.failure_rate]
 
@@ -81,8 +83,6 @@ class Component:
 
     def update_failure_rate(self, particle):
         section_x, section_y = self.check_component_section(particle)  # Tuple of X and Y axis coordinates in the matrix
-        print(f"Section : {section_x}, {section_y}")
-        print(f"Length Matrix : {len(self.failure_rate_matrix[0])}, {len(self.failure_rate_matrix)}")
         temporary_failure_rate = min(round(
             self.rate_list_failure[-1] * (1 + self.failure_rate_matrix[section_y][section_x]), 3), 1)
         self.failure_rate_matrix[section_y][section_x] = temporary_failure_rate
@@ -92,19 +92,10 @@ class Component:
         self.rate_list_failure.append(self.rate_list_failure[-1])
 
     def check_component_section(self, particle):
-        section_x = 0
-        section_y = 0
-
-        slot_size_x = self.size[0] / len(self.failure_rate_matrix[0])
-        slot_size_y = self.size[1] / len(self.failure_rate_matrix)
-
         # Change the coordinate referential of the particle
         translation_vector_x, translation_vector_y = (self.pos_x - self.size[0] / 2, self.pos_y - self.size[1] / 2)
         particle_pos_x = (particle.pos_x - translation_vector_x) * self.scale
         particle_pos_y = (particle.pos_y - translation_vector_y) * self.scale
-        print(f"Size : {self.size[0]}, {self.size[1]}")
-        print(f"Size : {len(self.failure_rate_matrix[0])}, {len(self.failure_rate_matrix)}")
-        print(f"Particle Position : {particle_pos_x}, {particle_pos_y}")
 
         section_x = int(particle_pos_x)
         section_y = int(particle_pos_y)
